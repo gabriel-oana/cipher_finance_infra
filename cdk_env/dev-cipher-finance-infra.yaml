@@ -1,0 +1,45 @@
+---
+env: &env dev
+base_stack_name: &base_stack_name cipher-finance
+
+tags:
+  - key: Project
+    value: Cipher Finance Infrastructure
+  - key: Application
+    value: Data Scraper
+  - key: Owner
+    value: Gabriel
+  - key: ProjectCode
+    value: "3"
+  - key: Environment
+    value: *env
+
+
+s3:
+  raw:
+    description: Raw data collection storage
+    bucket_name: !join [*env, *base_stack_name, -raw]
+    versioned: False
+    removal_policy: destroy
+  processed:
+    description: Processed data storage
+    bucket_name: !join [*env, *base_stack_name, -processed]
+    versioned: False
+    removal_policy: destroy
+
+
+iam_role:
+  stock-price-scraper:
+    description: IAM role allowed to only write to a specific bucket.
+    name: !join [*env, *base_stack_name, -stock-price-scraper-iam-role]
+
+
+lambdas:
+  stock-price-scraper:
+    description: Scraper for "real-time" stock price
+    retain_policy: destroy
+    timeout_seconds: 60
+    memory_size: 128
+    location: lambda_code/lambda_scraper
+    name: !join [*env, *base_stack_name, -stock-price-scraper]
+    iam_role: !join [*env, *base_stack_name, -stock-price-scraper-iam-role]

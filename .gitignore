@@ -1,0 +1,21 @@
+### Pycharm files
+.venv
+venv
+__pycharm__
+.idea/
+.idea
+*py_charm*
+*__py_charm__*
+*/__pycharm__/*
+*/__pycache__/*
+__pycache__
+
+### CDK files
+cdk.out/*
+cdk.out
+env.var.dev
+env.var.prd
+
+### Build files
+.build
+.build/*
