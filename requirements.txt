@@ -1,0 +1,5 @@
+aws-cdk-lib==2.20.0
+beautifulsoup4==4.11.1
+PyYAML==6.0
+requests==2.27.1
+constructs

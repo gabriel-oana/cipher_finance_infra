@@ -18,28 +18,36 @@ tags:
 s3:
   raw:
     description: Raw data collection storage
-    bucket_name: !join [*env, *base_stack_name, -raw]
+    bucket_name: !join [*env, -, *base_stack_name, -raw]
     versioned: False
     removal_policy: destroy
   processed:
     description: Processed data storage
-    bucket_name: !join [*env, *base_stack_name, -processed]
+    bucket_name: !join [*env, -, *base_stack_name, -processed]
     versioned: False
     removal_policy: destroy
 
 
 iam_role:
-  stock-price-scraper:
+  stock-scraper:
     description: IAM role allowed to only write to a specific bucket.
-    name: !join [*env, *base_stack_name, -stock-price-scraper-iam-role]
+    name: !join [*env, -, *base_stack_name, -stock-scraper-iam-role]
 
 
 lambdas:
-  stock-price-scraper:
+  stock-scraper:
     description: Scraper for "real-time" stock price
     retain_policy: destroy
     timeout_seconds: 60
     memory_size: 128
     location: lambda_code/lambda_scraper
-    name: !join [*env, *base_stack_name, -stock-price-scraper]
-    iam_role: !join [*env, *base_stack_name, -stock-price-scraper-iam-role]
+    name: !join [*env, -,  *base_stack_name, -stock-scraper-lambda]
+    iam_role: !join [*env, -, *base_stack_name, -stock-scraper-iam-role]
+
+cloudwatch:
+  events:
+    stock-scraper:
+      vusa-trigger: enabled
+      nvda-trigger: enabled
+      aiai-trigger: enabled
+      csco-trigger: enabled

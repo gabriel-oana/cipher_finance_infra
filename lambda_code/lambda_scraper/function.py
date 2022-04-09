@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import boto3
 
 
-S3_BUCKET = 'dev-cipher-finance-stock-raw'
+S3_BUCKET = 'dev-cipher-finance-raw'
 
 
 class VUSA:
@@ -104,6 +104,18 @@ def save_data(data: list, model):
 
     for item in data:
         client.put_object(Body=json.dumps(item), Bucket=S3_BUCKET, Key=f'{model.marker}/{item["dt"]}.json')
+
+
+def lambda_handler(event, context):
+    print(event, context)
+    start = date.today() - timedelta(days=5)
+    end = date.today()
+
+    model = get_model('vusa')
+    raw_data = requestor(model)
+
+    clean_data = parse(model, start_date=start, end_date=end, raw_data=raw_data)
+    save_data(data=clean_data, model=model)
 
 
 if __name__ == '__main__':

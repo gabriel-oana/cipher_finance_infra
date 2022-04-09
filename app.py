@@ -5,6 +5,8 @@ from constructs import Construct
 from cdk_utils.cdk_tags import add_tags
 from cdk_config.config import Config
 from cdk_stacks.s3.s3_stack import S3Stack
+from cdk_stacks.iam_role.stock_scraper_iam_stack import StockScraperIAMStack
+from cdk_stacks.lambdas.stock_scraper_lambda_stack import StockScraperLambdaStack
 
 
 cdk_app = cdk.App()
@@ -23,21 +25,21 @@ class RootStack(cdk.Stack):
             s3_config=config.s3_raw
         )
 
-        S3Stack(
+        # S3Stack(
+        #     self,
+        #     f'{config.env}-{config.base_stack_name}-s3-{config.s3_processed.bucket_name}',
+        #     config=config,
+        #     s3_config=config.s3_processed,
+        # )
+
+        # IAM Roles
+        StockScraperIAMStack(
             self,
-            f'{config.env}-{config.base_stack_name}-s3-{config.s3_processed.bucket_name}',
+            f'{config.env}-{config.base_stack_name}-iam-{config.iam_stock_scraper.name}',
             config=config,
-            s3_config=config.s3_processed,
+            iam_role=config.iam_stock_scraper
         )
 
-        # # IAM Roles
-        # AuctionExtractorIAMStack(
-        #     self,
-        #     f'{config.env}-{config.base_stack_name}-iam-{config.iam_auction_extractor.name}',
-        #     config=config,
-        #     iam_role=config.iam_auction_extractor
-        # )
-        #
         # AuctionProcessorIAMStack(
         #     self,
         #     f'{config.env}-{config.base_stack_name}-iam-{config.iam_mining_processor.name}',
@@ -45,14 +47,14 @@ class RootStack(cdk.Stack):
         #     iam_role=config.iam_mining_processor
         # )
         #
-        # # Lambda Functions
-        # AuctionExtractorLambdaStack(
-        #     self,
-        #     f'{config.env}-{config.base_stack_name}-lambda-{config.lambda_auction_extractor.name}',
-        #     config=config,
-        #     lambda_config=config.lambda_auction_extractor
-        # )
-        #
+        # Lambda Functions
+        StockScraperLambdaStack(
+            self,
+            f'{config.env}-{config.base_stack_name}-lambda-{config.lambda_stock_scraper.name}',
+            config=config,
+            lambda_config=config.lambda_stock_scraper
+        )
+
         # AuctionProcessorLambdaStack(
         #     self,
         #     f'{config.env}-{config.base_stack_name}-lambda-{config.lambda_auction_processor.name}',

@@ -34,16 +34,16 @@ class Config:
         return S3Config(self.config['s3']['processed'], env=self.env)
 
     @property
-    def iam_auction_extractor(self) -> IAMConfig:
-        return IAMConfig(self.config['iam_role']['auction-extractor'], env=self.env)
+    def iam_stock_scraper(self) -> IAMConfig:
+        return IAMConfig(self.config['iam_role']['stock-scraper'], env=self.env)
 
     @property
     def iam_mining_processor(self) -> IAMConfig:
         return IAMConfig(self.config['iam_role']['auction-processor'], env=self.env)
 
     @property
-    def lambda_auction_extractor(self) -> LambdaConfig:
-        return LambdaConfig(self.config['lambdas']['auction-extractor'], env=self.env)
+    def lambda_stock_scraper(self) -> LambdaConfig:
+        return LambdaConfig(self.config['lambdas']['stock-scraper'], env=self.env)
 
     @property
     def lambda_auction_processor(self) -> LambdaConfig:
