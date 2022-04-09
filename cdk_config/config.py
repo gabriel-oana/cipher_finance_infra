@@ -1,17 +1,17 @@
 import os
-import yaml
+from cdk_utils.yaml_reader import read_yaml_file
 
-from config.config_s3 import S3Config
-from config.config_iam import IAMConfig
-from config.config_lambda import LambdaConfig
-from config.config_vpc import VPCConfig
+from cdk_config.config_s3 import S3Config
+from cdk_config.config_iam import IAMConfig
+from cdk_config.config_lambda import LambdaConfig
+from cdk_config.config_vpc import VPCConfig
 
 
 class Config:
 
     def __init__(self, env: str):
-        default_path = f'{os.getcwd()}/cdk_env/{env}-wow-config.yaml'
-        self.config = yaml.safe_load(open(default_path))
+        default_path = f'{os.getcwd()}/cdk_env/{env}-cipher-finance-infra.yaml'
+        self.config = read_yaml_file(default_path)
 
     @property
     def env(self) -> str:
@@ -27,11 +27,11 @@ class Config:
 
     @property
     def s3_raw(self) -> S3Config:
-        return S3Config(self.config['s3_bucket']['raw'], env=self.env)
+        return S3Config(self.config['s3']['raw'], env=self.env)
 
     @property
     def s3_processed(self) -> S3Config:
-        return S3Config(self.config['s3_bucket']['processed'], env=self.env)
+        return S3Config(self.config['s3']['processed'], env=self.env)
 
     @property
     def iam_auction_extractor(self) -> IAMConfig:
@@ -48,10 +48,6 @@ class Config:
     @property
     def lambda_auction_processor(self) -> LambdaConfig:
         return LambdaConfig(self.config['lambdas']['auction-processor'], env=self.env)
-
-    @property
-    def rds(self) -> RDSConfig:
-        return RDSConfig(self.config['rds'], env=self.env)
 
     @property
     def vpc(self) -> VPCConfig:

@@ -32,7 +32,7 @@ def read_yaml_file(file_path: str):
             yaml.add_constructor('!join', yaml_join)
             yaml.add_constructor('!from_env', yaml_from_env)
             
-            yaml_object = yaml.safe_load(stream)
+            yaml_object = yaml.unsafe_load(stream)
             return yaml_object
         except yaml.YAMLError as exc:
             raise ImportError(f'{exc}')

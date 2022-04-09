@@ -1,6 +1,6 @@
-from aws_cdk import core
+import aws_cdk as cdk
 
 
 def add_tags(construct, tags: dict) -> None:
     for tag in tags:
-        core.Tags.of(construct).add(tag['key'], tag['value'])
+        cdk.Tags.of(construct).add(tag['key'], tag['value'])
