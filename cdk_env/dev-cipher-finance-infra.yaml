@@ -38,16 +38,12 @@ lambdas:
   stock-scraper:
     description: Scraper for "real-time" stock price
     retain_policy: destroy
-    timeout_seconds: 60
+    timeout_seconds: 10
     memory_size: 128
     location: lambda_code/lambda_scraper
     name: !join [*env, -,  *base_stack_name, -stock-scraper-lambda]
     iam_role: !join [*env, -, *base_stack_name, -stock-scraper-iam-role]
-
-cloudwatch:
-  events:
-    stock-scraper:
-      vusa-trigger: enabled
-      nvda-trigger: enabled
-      aiai-trigger: enabled
-      csco-trigger: enabled
+    cloudwatch_events: # Creates the one event with the message below
+      - ticker: vusa
+      - ticker: nvda
+      - ticker: csco

@@ -11,3 +11,11 @@ docker rmi -f $(docker images -aq)
 
 docker-compose -f docker/docker-compose.yml up
 ```
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```

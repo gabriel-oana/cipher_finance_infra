@@ -7,6 +7,7 @@ from cdk_config.config import Config
 from cdk_stacks.s3.s3_stack import S3Stack
 from cdk_stacks.iam_role.stock_scraper_iam_stack import StockScraperIAMStack
 from cdk_stacks.lambdas.stock_scraper_lambda_stack import StockScraperLambdaStack
+from cdk_stacks.cloudwatch.events import CloudwatchEventStack
 
 
 cdk_app = cdk.App()
@@ -20,48 +21,26 @@ class RootStack(cdk.Stack):
         # S3 Buckets
         s3_raw_bucket = S3Stack(
             self,
-            f'{config.env}-{config.base_stack_name}-s3-{config.s3_raw.bucket_name}',
+            f'{config.s3_raw.bucket_name}-stack',
             config=config,
             s3_config=config.s3_raw
         )
 
-        # S3Stack(
-        #     self,
-        #     f'{config.env}-{config.base_stack_name}-s3-{config.s3_processed.bucket_name}',
-        #     config=config,
-        #     s3_config=config.s3_processed,
-        # )
-
         # IAM Roles
         StockScraperIAMStack(
             self,
-            f'{config.env}-{config.base_stack_name}-iam-{config.iam_stock_scraper.name}',
+            f'{config.iam_stock_scraper.name}-stack',
             config=config,
             iam_role=config.iam_stock_scraper
         )
 
-        # AuctionProcessorIAMStack(
-        #     self,
-        #     f'{config.env}-{config.base_stack_name}-iam-{config.iam_mining_processor.name}',
-        #     config=config,
-        #     iam_role=config.iam_mining_processor
-        # )
-        #
         # Lambda Functions
         StockScraperLambdaStack(
             self,
-            f'{config.env}-{config.base_stack_name}-lambda-{config.lambda_stock_scraper.name}',
+            f'{config.lambda_stock_scraper.name}-stack',
             config=config,
             lambda_config=config.lambda_stock_scraper
         )
-
-        # AuctionProcessorLambdaStack(
-        #     self,
-        #     f'{config.env}-{config.base_stack_name}-lambda-{config.lambda_auction_processor.name}',
-        #     config=config,
-        #     lambda_config=config.lambda_auction_processor,
-        #     s3_bucket=s3_raw_bucket.get_s3_bucket()
-        # )
 
         # vpc_stack = VpcStack(
         #     cdk_app,

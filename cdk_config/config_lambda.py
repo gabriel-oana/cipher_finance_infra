@@ -31,3 +31,7 @@ class LambdaConfig:
     @property
     def iam_role(self) -> str:
         return self.lambda_conf['iam_role']
+
+    @property
+    def cloudwatch_events(self) -> dict:
+        return self.lambda_conf['cloudwatch_events']

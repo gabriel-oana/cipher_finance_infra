@@ -49,29 +49,29 @@ class StockScraperLambdaStack(cdk.NestedStack):
             ]
         )
         self.function.apply_removal_policy(removal_policy)
+        add_tags(self, tags=config.tags)
 
-        # Lambda Schedule
+        # Cloudwatch events triggers the lambda function at specific time with each event.
         lambda_schedule = aws_events.Schedule.cron(
                 minute='0',
                 hour='*',
                 month='*',
                 week_day='2-6',
                 year='*')
-        event_message = {"From": "CDK"}
-        event_lambda_target = aws_events_targets.LambdaFunction(handler=self.function,
-                                                                event=aws_events.RuleTargetInput.from_object(event_message))
 
-        # Lambda hourly rule
-        aws_events.Rule(
-            self,
-            f'{lambda_config.name}-rule',
-            description="The once per hour CloudWatch event trigger for the Lambda",
-            enabled=True,
-            schedule=lambda_schedule,
-            targets=[event_lambda_target]
-        )
+        for ticker in config.lambda_stock_scraper.cloudwatch_events:
+            event_lambda_target = aws_events_targets.LambdaFunction(handler=self.function,
+                                                                    event=aws_events.RuleTargetInput.from_object(ticker))
 
-        add_tags(self, tags=config.tags)
+            cw_rule = aws_events.Rule(
+                self,
+                id=f'{lambda_config.name}-{ticker["ticker"]}-cw-rule',
+                description="The once per hour CloudWatch event trigger for the Lambda",
+                enabled=True,
+                schedule=lambda_schedule,
+                targets=[event_lambda_target]
+            )
+            add_tags(cw_rule, tags=config.tags)
 
     def create_dependencies_layer(self, config: Config, base_path: str, lambda_config: LambdaConfig) -> LayerVersion:
         """

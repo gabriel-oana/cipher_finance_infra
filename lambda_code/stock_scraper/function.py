@@ -18,7 +18,28 @@ class VUSA:
     name = 'Vanguard S&P 500 UCITS'
     ticker = 'VUSA.L'
     marker = 'vusa'
+    currency = 'GBP'
     url = 'https://uk.investing.com/etfs/vanguard-s-p-500-uk-historical-data'
+    parser = 'uk_investing'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
+
+
+class NVDA:
+    name = 'Nvidia Corp'
+    ticker = 'NVDA'
+    marker = 'nvda'
+    currency = 'USD'
+    url = 'https://uk.investing.com/equities/nvidia-corp-historical-data'
+    parser = 'uk_investing'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
+
+
+class CSCO:
+    name = 'Cisco Systems Inc'
+    ticker = 'CSCO'
+    marker = 'csco'
+    currency = 'USD'
+    url = 'https://uk.investing.com/equities/cisco-sys-inc-historical-data'
     parser = 'uk_investing'
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
 
@@ -27,6 +48,12 @@ class VUSA:
 def get_model(marker: str):
     if marker == 'vusa':
         return VUSA()
+    elif marker == 'nvda':
+        return NVDA()
+    elif marker == 'csco':
+        return CSCO()
+    else:
+        raise ValueError(f'Marker {marker} not recognized')
 
 
 def convert_str_to_date(date_str: str) -> datetime.date:
@@ -60,7 +87,7 @@ def requestor(model):
     r = requests.get(url=model.url, headers=model.headers)
     html_text = BeautifulSoup(r.text, features='html.parser')
 
-    if model.marker == 'vusa':
+    if model.marker in ['vusa', 'nvda', 'csco']:
         table = html_text.find('table', attrs={"class": "genTbl closedTbl historicalTbl"})
         table_body = table.find('tbody')
         rows = table_body.find_all('tr')
@@ -72,6 +99,8 @@ def requestor(model):
             data.append([ele for ele in cols if ele])
 
         return data
+    else:
+        raise RuntimeError(f'Requestor not configure for marker {model.marker}')
 
 
 # Transform
@@ -103,15 +132,18 @@ def save_data(data: list, model):
     client = boto3.client('s3')
 
     for item in data:
-        client.put_object(Body=json.dumps(item), Bucket=S3_BUCKET, Key=f'{model.marker}/{item["dt"]}.json')
+        year = item['dt'].split('-')[0]
+        month = item['dt'].split('-')[1]
+        day = item['dt'].split('-')[2]
+        client.put_object(Body=json.dumps(item), Bucket=S3_BUCKET, Key=f'{model.marker}/{year}/{month}/{day}/{item["dt"]}.json')
 
 
 def lambda_handler(event, context):
-    print(event, context)
+    marker = event['ticker']
     start = date.today() - timedelta(days=5)
     end = date.today()
 
-    model = get_model('vusa')
+    model = get_model(marker)
     raw_data = requestor(model)
 
     clean_data = parse(model, start_date=start, end_date=end, raw_data=raw_data)
@@ -119,15 +151,7 @@ def lambda_handler(event, context):
 
 
 if __name__ == '__main__':
-
-    start = date.today() - timedelta(days=5)
-    end = date.today()
-
-    model = get_model('vusa')
-    raw_data = requestor(model)
-
-    clean_data = parse(model, start_date=start, end_date=end, raw_data=raw_data)
-    save_data(data=clean_data, model=model)
-
-
-
+    lambda_handler(
+        event={"ticker": "nvda"},
+        context=None
+    )
