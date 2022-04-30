@@ -44,6 +44,16 @@ class CSCO:
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
 
 
+class AIAI:
+    name: str = 'L&G Artificial Intelligence UCITS ETF'
+    ticker: str = 'AIAI'
+    marker: str = 'aiai'
+    currency: str = 'GBP'
+    url: str = 'https://uk.investing.com/etfs/lg-artificial-intelligence-ucits-historical-data'
+    parser = 'uk_investing'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
+
+
 # UTILS
 def get_model(marker: str):
     if marker == 'vusa':
@@ -52,6 +62,8 @@ def get_model(marker: str):
         return NVDA()
     elif marker == 'csco':
         return CSCO()
+    elif marker == 'aiai':
+        return AIAI()
     else:
         raise ValueError(f'Marker {marker} not recognized')
 
@@ -87,7 +99,7 @@ def requestor(model):
     r = requests.get(url=model.url, headers=model.headers)
     html_text = BeautifulSoup(r.text, features='html.parser')
 
-    if model.marker in ['vusa', 'nvda', 'csco']:
+    if model.marker in ['vusa', 'nvda', 'csco', 'aiai']:
         table = html_text.find('table', attrs={"class": "genTbl closedTbl historicalTbl"})
         table_body = table.find('tbody')
         rows = table_body.find_all('tr')
@@ -118,12 +130,12 @@ def parse(model, raw_data: list, start_date: datetime.date, end_date: datetime.d
                 data.append({
                     "updated_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     "dt": convert_date_to_str(date_value),
-                    "price": float(val[1].replace('$', '')),
-                    "open": float(val[2].replace("$", '')),
-                    "high": float(val[3].replace("$", '')),
-                    "low": float(val[4].replace("$", '')),
+                    "price": float(val[1].replace('$', '').replace(',', '')),
+                    "open": float(val[2].replace("$", '').replace(',', '')),
+                    "high": float(val[3].replace("$", '').replace(',', '')),
+                    "low": float(val[4].replace("$", '').replace(',', '')),
                     "volume": clean_uk_investment_volume(val[5].replace(',', '.')),
-                    "change": float((val[6].split('%'))[0])
+                    "change": float((val[6].split('%'))[0].replace(',', ''))
                 })
         return data
 
@@ -135,7 +147,9 @@ def save_data(data: list, model):
         year = item['dt'].split('-')[0]
         month = item['dt'].split('-')[1]
         day = item['dt'].split('-')[2]
-        client.put_object(Body=json.dumps(item), Bucket=S3_BUCKET, Key=f'{model.marker}/{year}/{month}/{day}/{item["dt"]}.json')
+
+        key = f'historic/{model.marker}/{year}/{month}/{day}/{model.marker}.json'
+        client.put_object(Body=json.dumps(item), Bucket=S3_BUCKET, Key=key)
 
 
 def lambda_handler(event, context):
@@ -152,6 +166,6 @@ def lambda_handler(event, context):
 
 if __name__ == '__main__':
     lambda_handler(
-        event={"ticker": "nvda"},
+        event={"ticker": "aiai"},
         context=None
     )

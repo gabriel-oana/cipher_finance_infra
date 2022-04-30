@@ -13,9 +13,6 @@ docker-compose -f docker/docker-compose.yml up
 ```
 
 ```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
+flowchart LR
+   a --> b & c--> d
 ```

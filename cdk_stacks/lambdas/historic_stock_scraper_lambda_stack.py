@@ -14,7 +14,7 @@ from cdk_config.config import Config
 from cdk_config.config_lambda import LambdaConfig
 
 
-class StockScraperLambdaStack(cdk.NestedStack):
+class HistoricStockScraperLambdaStack(cdk.NestedStack):
 
     def __init__(self, scope: Construct, id: str, lambda_config: LambdaConfig, config: Config, **kwargs):
         super().__init__(scope, id, **kwargs)
@@ -41,6 +41,9 @@ class StockScraperLambdaStack(cdk.NestedStack):
             function_name=lambda_config.name,
             memory_size=lambda_config.memory_size,
             timeout=cdk.Duration.seconds(lambda_config.timeout_seconds),
+            environment={
+                "env": config.env
+            },
             log_retention=RetentionDays.THREE_DAYS,
             layers=[
                 self.create_dependencies_layer(config=config,
@@ -56,10 +59,10 @@ class StockScraperLambdaStack(cdk.NestedStack):
                 minute='0',
                 hour='*',
                 month='*',
-                week_day='2-6',
+                week_day='*',
                 year='*')
 
-        for ticker in config.lambda_stock_scraper.cloudwatch_events:
+        for ticker in config.lambda_historic_stock_scraper.cloudwatch_events:
             event_lambda_target = aws_events_targets.LambdaFunction(handler=self.function,
                                                                     event=aws_events.RuleTargetInput.from_object(ticker))
 
@@ -69,6 +72,7 @@ class StockScraperLambdaStack(cdk.NestedStack):
                 description="The once per hour CloudWatch event trigger for the Lambda",
                 enabled=True,
                 schedule=lambda_schedule,
+                rule_name=f'{lambda_config.name}-{ticker["ticker"]}',
                 targets=[event_lambda_target]
             )
             add_tags(cw_rule, tags=config.tags)

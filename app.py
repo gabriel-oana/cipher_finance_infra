@@ -6,8 +6,8 @@ from cdk_utils.cdk_tags import add_tags
 from cdk_config.config import Config
 from cdk_stacks.s3.s3_stack import S3Stack
 from cdk_stacks.iam_role.stock_scraper_iam_stack import StockScraperIAMStack
-from cdk_stacks.lambdas.stock_scraper_lambda_stack import StockScraperLambdaStack
-from cdk_stacks.cloudwatch.events import CloudwatchEventStack
+from cdk_stacks.lambdas.historic_stock_scraper_lambda_stack import HistoricStockScraperLambdaStack
+from cdk_stacks.lambdas.hourly_stock_scraper_lambda_stack import HourlyStockScraperLambdaStack
 
 
 cdk_app = cdk.App()
@@ -19,7 +19,7 @@ class RootStack(cdk.Stack):
         super().__init__(scope, id, **kwargs)
 
         # S3 Buckets
-        s3_raw_bucket = S3Stack(
+        S3Stack(
             self,
             f'{config.s3_raw.bucket_name}-stack',
             config=config,
@@ -35,11 +35,18 @@ class RootStack(cdk.Stack):
         )
 
         # Lambda Functions
-        StockScraperLambdaStack(
+        HistoricStockScraperLambdaStack(
             self,
-            f'{config.lambda_stock_scraper.name}-stack',
+            f'{config.lambda_historic_stock_scraper.name}-stack',
             config=config,
-            lambda_config=config.lambda_stock_scraper
+            lambda_config=config.lambda_historic_stock_scraper
+        )
+
+        HourlyStockScraperLambdaStack(
+            self,
+            f'{config.lambda_hourly_stock_scraper.name}-stack',
+            config=config,
+            lambda_config=config.lambda_hourly_stock_scraper
         )
 
         # vpc_stack = VpcStack(

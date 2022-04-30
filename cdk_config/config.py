@@ -42,12 +42,12 @@ class Config:
         return IAMConfig(self.config['iam_role']['auction-processor'], env=self.env)
 
     @property
-    def lambda_stock_scraper(self) -> LambdaConfig:
-        return LambdaConfig(self.config['lambdas']['stock-scraper'], env=self.env)
+    def lambda_historic_stock_scraper(self) -> LambdaConfig:
+        return LambdaConfig(self.config['lambdas']['historic-stock-scraper'], env=self.env)
 
     @property
-    def lambda_auction_processor(self) -> LambdaConfig:
-        return LambdaConfig(self.config['lambdas']['auction-processor'], env=self.env)
+    def lambda_hourly_stock_scraper(self) -> LambdaConfig:
+        return LambdaConfig(self.config['lambdas']['hourly-stock-scraper'], env=self.env)
 
     @property
     def vpc(self) -> VPCConfig:
