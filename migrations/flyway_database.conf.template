@@ -1,0 +1,7 @@
+#postgres is the default table from the cloud formation database instance creation script
+
+flyway.locations=filesystem:database
+
+#md5 passwords stored without commas and without 'md5' prefix.
+flyway.placeholders.user.etl.password=
+flyway.placeholders.user.read_only_usr.password=

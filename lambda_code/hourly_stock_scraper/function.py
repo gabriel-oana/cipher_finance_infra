@@ -1,8 +1,4 @@
-"""
-Scraper triggered by Cloudwatch Events.
-This function is optimised for speed not code quality.
-As result, everything is very straight forward with as little overhead as possible.
-"""
+import os
 import json
 import boto3
 import requests
@@ -60,24 +56,17 @@ def lambda_handler(event, context):
     model = get_model(marker)
 
     # Turn this on in dev
-    model.debug = True
+    model.debug = True if os.getenv('env') else False
 
     raw_data = requester(model)
     print(raw_data)
-
     raw_transform(model, raw_data=raw_data)
-
     print(model)
-
-    # save_data(model=model)
+    save_data(model=model)
 
 
 if __name__ == '__main__':
     lambda_handler(
         event={"ticker": "nvda"},
-        context=None
-    )
-    lambda_handler(
-        event={"ticker": "aiai"},
         context=None
     )

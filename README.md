@@ -16,3 +16,7 @@ docker-compose -f docker/docker-compose.yml up
 flowchart LR
    a --> b & c--> d
 ```
+
+```shell
+flyway -configFiles=flyway_database.conf info
+```

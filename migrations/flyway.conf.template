@@ -1,0 +1,9 @@
+flyway.url=jdbc:postgresql://{host}:{port}/{db}
+flyway.user=
+flyway.password=
+
+flyway.driver=org.postgresql.Driver
+flyway.sqlMigrationPrefix=V
+flyway.sqlMigrationSeparator=__
+flyway.sqlMigrationSuffixes=.sql
+flyway.validateOnMigrate=true
