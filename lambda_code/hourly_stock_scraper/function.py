@@ -5,6 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from models.models import Ticker, VUSA, NVDA, CSCO, AIAI
+from db.postgres_factory import PostgresFactory
+from db.orm import ORM
 
 
 def get_model(marker: str):
@@ -37,7 +39,7 @@ def raw_transform(model, raw_data: list):
         model.parse(raw_data=raw_data)
 
 
-def save_data(model: Ticker):
+def save_data_s3(model: Ticker):
     client = boto3.client('s3')
 
     # Get the file if exists else create it.
@@ -51,18 +53,25 @@ def save_data(model: Ticker):
     client.put_object(Body=json.dumps(upload_data), Bucket=model.s3_bucket, Key=model.s3_key)
 
 
+def save_data_postgres(model: Ticker):
+    pg = PostgresFactory()
+    pg.load(data=[model.data.__dict__], model=ORM)
+
+
 def lambda_handler(event, context):
     marker = event['ticker']
     model = get_model(marker)
-
-    # Turn this on in dev
     model.debug = True if os.getenv('env') else False
 
+    # Extract
     raw_data = requester(model)
-    print(raw_data)
+
+    # Transform
     raw_transform(model, raw_data=raw_data)
-    print(model)
-    save_data(model=model)
+
+    # Load
+    save_data_s3(model=model)
+    save_data_postgres(model=model)
 
 
 if __name__ == '__main__':

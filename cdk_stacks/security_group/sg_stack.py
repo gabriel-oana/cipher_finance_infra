@@ -19,28 +19,11 @@ class SecurityGroupStack(cdk.Stack):
             allow_all_outbound=True
         )
 
-        # Egress Rules
-        self.sg.add_egress_rule(
-            peer=aws_ec2.Peer.ipv4(vpc.vpc.vpc_cidr_block),
-            description='Postgres Egress',
-            connection=aws_ec2.Port(
-                protocol=aws_ec2.Protocol.TCP,
-                string_representation='TCP',
-                from_port=5432,
-                to_port=5432
-            )
-        )
-
         # Ingress Rules
         self.sg.add_ingress_rule(
             peer=aws_ec2.Peer.ipv4(vpc.vpc.vpc_cidr_block),
             description='Postgres Ingress',
-            connection=aws_ec2.Port(
-                protocol=aws_ec2.Protocol.TCP,
-                string_representation='TCP',
-                from_port=5432,
-                to_port=5432
-            )
+            connection=aws_ec2.Port.all_traffic()
         )
 
         add_tags(self, tags=config.tags)

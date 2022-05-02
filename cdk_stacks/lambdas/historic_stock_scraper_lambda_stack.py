@@ -36,7 +36,7 @@ class HistoricStockScraperLambdaStack(cdk.Stack):
             description=lambda_config.description,
             handler='function.lambda_handler',
             code=AssetCode.from_asset(lambda_config.location),
-            runtime=Runtime(name="python3.8"),
+            runtime=Runtime(name="python3.7"),
             role=iam_role,
             function_name=lambda_config.name,
             memory_size=lambda_config.memory_size,
@@ -82,7 +82,7 @@ class HistoricStockScraperLambdaStack(cdk.Stack):
         Creates the packages required for the Lambda function
         """
         requirements_file = f'{base_path}/requirements.txt'
-        output_dir = f'{os.getcwd()}/.build/{config.env}-{lambda_config.name}'
+        output_dir = f'{os.getcwd()}/.build/{lambda_config.name}'
 
         if not os.environ.get('SKIP_PIP'):
             subprocess.check_call(
@@ -95,7 +95,7 @@ class HistoricStockScraperLambdaStack(cdk.Stack):
             self,
             layer_id,
             code=layer_code,
-            compatible_runtimes=[Runtime(name="python3.8")]
+            compatible_runtimes=[Runtime(name="python3.7")]
         )
 
         return layer

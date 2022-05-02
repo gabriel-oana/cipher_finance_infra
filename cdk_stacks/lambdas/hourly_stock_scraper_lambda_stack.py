@@ -36,13 +36,18 @@ class HourlyStockScraperLambdaStack(cdk.Stack):
             description=lambda_config.description,
             handler='function.lambda_handler',
             code=AssetCode.from_asset(lambda_config.location),
-            runtime=Runtime(name="python3.8"),
+            runtime=Runtime(name="python3.7"),
             role=iam_role,
             function_name=lambda_config.name,
             memory_size=lambda_config.memory_size,
             timeout=cdk.Duration.seconds(lambda_config.timeout_seconds),
             environment={
-                "env": config.env
+                "env": config.env,
+                "RDS_HOST": os.getenv('RDS_HOST'),
+                "RDS_PORT": os.getenv('RDS_PORT'),
+                "RDS_DATABASE": os.getenv('RDS_DATABASE'),
+                "RDS_USER": os.getenv('RDS_USER'),
+                "RDS_PASS": os.getenv('RDS_PASS')
             },
             log_retention=RetentionDays.THREE_DAYS,
             layers=[
@@ -82,7 +87,7 @@ class HourlyStockScraperLambdaStack(cdk.Stack):
         Creates the packages required for the Lambda function
         """
         requirements_file = f'{base_path}/requirements.txt'
-        output_dir = f'{os.getcwd()}/.build/{config.env}-{lambda_config.name}'
+        output_dir = f'{os.getcwd()}/.build/{lambda_config.name}'
 
         if not os.environ.get('SKIP_PIP'):
             subprocess.check_call(
@@ -95,7 +100,7 @@ class HourlyStockScraperLambdaStack(cdk.Stack):
             self,
             layer_id,
             code=layer_code,
-            compatible_runtimes=[Runtime(name="python3.8")]
+            compatible_runtimes=[Runtime(name="python3.7")]
         )
 
         return layer
