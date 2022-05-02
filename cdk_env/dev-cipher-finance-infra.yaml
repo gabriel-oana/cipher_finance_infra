@@ -21,12 +21,14 @@ s3:
     description: Raw data collection storage
     bucket_name: !join [*env, -, *base_stack_name, -raw]
     versioned: False
-    removal_policy: destroy
+    removal_policy: retain
+    auto_delete_objects: false
   processed:
     description: Processed data storage
     bucket_name: !join [*env, -, *base_stack_name, -processed]
     versioned: False
-    removal_policy: destroy
+    removal_policy: retain
+    auto_delete_objects: false
 
 
 iam_role:
@@ -62,3 +64,25 @@ lambdas:
       - ticker: nvda
       - ticker: csco
       - ticker: aiai
+
+vpc:
+  name: cipher-vpc
+  cidr: 10.10.0.0/16
+  max_azs: 2
+  nat_gateways: 2
+
+security_group:
+  name: !join [ *env, -, *base_stack_name, -security-group ]
+
+rds:
+  instance_name: !join [*env ,-cipher]
+  instance_type: t4g.micro
+  database_name: cipher
+  storage: 20
+  max_storage: 25
+  deletion_protection: false
+
+route53:
+  certificate_arn: arn:aws:acm:eu-west-2:416241265996:certificate/6eba07fd-3875-4d9c-9d35-632ef8e7f9f1
+  root_domain: ciphercode.co.uk
+  db_record_name: !join [ *env, .db ]

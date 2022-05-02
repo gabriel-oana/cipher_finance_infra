@@ -10,7 +10,6 @@ class VUSA(Ticker):
     marker: str = 'vusa'
     currency: str = 'GBP'
     url: str = 'https://uk.investing.com/etfs/vanguard-s-p-500-uk-historical-data'
-    indices: dict = field(default_factory=lambda: dict(price=0, change=1, prc_change=3, volume=14, price_range=18))
 
 
 @dataclass
@@ -20,7 +19,6 @@ class NVDA(Ticker):
     marker: str = 'nvda'
     currency: str = 'USD'
     url: str = 'https://uk.investing.com/equities/nvidia-corp-historical-data'
-    indices: dict = field(default_factory=lambda: dict(price=0, change=1, prc_change=3, volume=23, price_range=27))
 
 
 @dataclass
@@ -30,7 +28,6 @@ class CSCO(Ticker):
     marker: str = 'csco'
     currency: str = 'USD'
     url: str = 'https://uk.investing.com/equities/cisco-sys-inc-historical-data'
-    indices: dict = field(default_factory=lambda: dict(price=0, change=1, prc_change=3, volume=23, price_range=27))
 
 
 @dataclass
@@ -40,4 +37,3 @@ class AIAI(Ticker):
     marker: str = 'aiai'
     currency: str = 'GBP'
     url: str = 'https://uk.investing.com/etfs/lg-artificial-intelligence-ucits-historical-data'
-    indices: dict = field(default_factory=lambda: dict(price=0, change=1, prc_change=3, volume=14, price_range=18))

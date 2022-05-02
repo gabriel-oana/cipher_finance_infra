@@ -20,3 +20,7 @@ class S3Config:
     @property
     def removal_policy(self) -> str:
         return self.s3_config['removal_policy']
+
+    @property
+    def auto_delete_objects(self) -> bool:
+        return self.s3_config['auto_delete_objects']

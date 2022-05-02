@@ -63,14 +63,20 @@ def lambda_handler(event, context):
     model.debug = True
 
     raw_data = requester(model)
+    print(raw_data)
+
     raw_transform(model, raw_data=raw_data)
 
     print(model)
 
-    save_data(model=model)
+    # save_data(model=model)
 
 
 if __name__ == '__main__':
+    lambda_handler(
+        event={"ticker": "nvda"},
+        context=None
+    )
     lambda_handler(
         event={"ticker": "aiai"},
         context=None

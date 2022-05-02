@@ -8,7 +8,7 @@ from cdk_config.config import Config
 from cdk_utils.cdk_tags import add_tags
 
 
-class S3Stack(cdk.NestedStack):
+class S3Stack(cdk.Stack):
 
     def __init__(self, scope: Construct, id: str, config: Config, s3_config: S3Config, **kwargs):
         super().__init__(scope, id, **kwargs)
@@ -18,6 +18,7 @@ class S3Stack(cdk.NestedStack):
             id=f'{s3_config.bucket_name}-s3-bucket',
             bucket_name=s3_config.bucket_name,
             removal_policy=self._map_removal_policy(s3_config.removal_policy),
+            auto_delete_objects=False,
             access_control=s3.BucketAccessControl.PRIVATE
         )
 

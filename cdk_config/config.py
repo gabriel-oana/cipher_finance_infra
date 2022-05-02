@@ -5,6 +5,9 @@ from cdk_config.config_s3 import S3Config
 from cdk_config.config_iam import IAMConfig
 from cdk_config.config_lambda import LambdaConfig
 from cdk_config.config_vpc import VPCConfig
+from cdk_config.config_rds import RDSConfig
+from cdk_config.config_route53 import Route53Config
+from cdk_config.config_sg import SGConfig
 
 
 class Config:
@@ -52,3 +55,15 @@ class Config:
     @property
     def vpc(self) -> VPCConfig:
         return VPCConfig(self.config['vpc'], env=self.env)
+
+    @property
+    def rds(self) -> RDSConfig:
+        return RDSConfig(self.config['rds'], env=self.env)
+
+    @property
+    def route53(self) -> Route53Config:
+        return Route53Config(self.config['route53'], env=self.env)
+
+    @property
+    def sg(self) -> SGConfig:
+        return SGConfig(self.config['security_group'], env=self.env)

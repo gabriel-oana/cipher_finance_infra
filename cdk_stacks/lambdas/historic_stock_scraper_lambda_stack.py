@@ -14,7 +14,7 @@ from cdk_config.config import Config
 from cdk_config.config_lambda import LambdaConfig
 
 
-class HistoricStockScraperLambdaStack(cdk.NestedStack):
+class HistoricStockScraperLambdaStack(cdk.Stack):
 
     def __init__(self, scope: Construct, id: str, lambda_config: LambdaConfig, config: Config, **kwargs):
         super().__init__(scope, id, **kwargs)

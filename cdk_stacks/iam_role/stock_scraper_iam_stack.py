@@ -9,7 +9,7 @@ from cdk_utils.cdk_tags import add_tags
 from cdk_stacks.iam_role.common_policies import CommonIAMPolicy
 
 
-class StockScraperIAMStack(cdk.NestedStack):
+class StockScraperIAMStack(cdk.Stack):
 
     def __init__(self, scope: Construct, id: str, iam_role: IAMConfig, config: Config, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)

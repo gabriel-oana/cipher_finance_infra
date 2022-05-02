@@ -19,10 +19,31 @@ class Model:
     low: float = None
     high: float = None
 
-    def set_values(self, raw_data: list, indices: dict, debug: bool = False):
+    @staticmethod
+    def get_indices(raw_data: list, debug: bool = False) -> dict:
+        """
+        Finds the indices of where the values are in the list.
+        List example: ['1,106.80', '+14.60', '\xa0\xa0', '+1.34%', '', '', '', '', '29/04 - Closed. Currency in GBP ( Disclaimer )', '', '', '', '', 'Volume', ' 14,423', 'Bid/Ask', ' 0.00 / 0.00', "Day's Range", ' 1,105.40 - 1,114.80']
+        """
+
+        indices = {
+            "price": 0,
+            "change": 1,
+            "prc_change": 3,
+            "volume": raw_data.index('Volume') + 1,
+            "price_range": raw_data.index("Day's Range") + 1
+        }
+        if debug:
+            print(f'Indices: {indices}')
+
+        return indices
+
+    def set_values(self, raw_data: list, debug: bool = False):
 
         if debug:
             print(f'Raw Data: {raw_data}')
+
+        indices = self.get_indices(raw_data=raw_data, debug=debug)
 
         self._set_price(raw_data=raw_data, price_index=indices['price'], debug=debug)
         self._set_change(raw_data=raw_data, change_index=indices['change'], debug=debug)
@@ -72,7 +93,6 @@ class Model:
 class Ticker:
     ticker: str
     marker: str
-    indices: dict
     parser: str = 'uk_investing'
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0'}
     s3_bucket: str = None
@@ -95,5 +115,5 @@ class Ticker:
 
     def parse(self, raw_data: list):
         model = Model(ticker=self.ticker)
-        model.set_values(raw_data=raw_data, indices=self.indices, debug=self.debug)
+        model.set_values(raw_data=raw_data, debug=self.debug)
         self.data = model

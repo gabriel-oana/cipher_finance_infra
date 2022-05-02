@@ -1,0 +1,42 @@
+{
+  "availability-zones:account=416241265996:region=eu-west-2": [
+    "eu-west-2a",
+    "eu-west-2b",
+    "eu-west-2c"
+  ],
+  "vpc-provider:account=416241265996:filter.isDefault=true:region=eu-west-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-6d841005",
+    "vpcCidrBlock": "172.31.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-03805a79",
+            "cidr": "172.31.16.0/20",
+            "availabilityZone": "eu-west-2a",
+            "routeTableId": "rtb-5b561733"
+          },
+          {
+            "subnetId": "subnet-2022cb6c",
+            "cidr": "172.31.32.0/20",
+            "availabilityZone": "eu-west-2b",
+            "routeTableId": "rtb-5b561733"
+          },
+          {
+            "subnetId": "subnet-0599076c",
+            "cidr": "172.31.0.0/20",
+            "availabilityZone": "eu-west-2c",
+            "routeTableId": "rtb-5b561733"
+          }
+        ]
+      }
+    ]
+  },
+  "hosted-zone:account=416241265996:domainName=ciphercode.co.uk:region=eu-west-2": {
+    "Id": "/hostedzone/Z06543592F17AZ9WQHB1A",
+    "Name": "ciphercode.co.uk."
+  }
+}

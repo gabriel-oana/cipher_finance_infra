@@ -15,3 +15,7 @@ class VPCConfig:
     @property
     def nat_gateways(self) -> int:
         return self.vpc_config['nat_gateways']
+
+    @property
+    def name(self) -> str:
+        return self.vpc_config['name']
