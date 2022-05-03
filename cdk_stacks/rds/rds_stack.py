@@ -8,8 +8,10 @@ from cdk_utils.cdk_tags import add_tags
 
 class RDSPostgresStack(cdk.Stack):
 
-    def __init__(self, scope: Construct, id: str, config: Config, vpc: aws_ec2.Vpc, sg, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, config: Config, sg, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
+
+        vpc = aws_ec2.Vpc.from_lookup(self, "VPC", vpc_name=config.vpc.name)
 
         self.db = aws_rds.DatabaseInstance(
             self,

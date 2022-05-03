@@ -38,5 +38,48 @@
   "hosted-zone:account=416241265996:domainName=ciphercode.co.uk:region=eu-west-2": {
     "Id": "/hostedzone/Z06543592F17AZ9WQHB1A",
     "Name": "ciphercode.co.uk."
+  },
+  "vpc-provider:account=416241265996:filter.tag:Name=cipher-vpc:region=eu-west-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-081a6cd4732d5d000",
+    "vpcCidrBlock": "10.10.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-03a6781ee34faa3f4",
+            "cidr": "10.10.0.0/24",
+            "availabilityZone": "eu-west-2a",
+            "routeTableId": "rtb-0d217241022377b63"
+          },
+          {
+            "subnetId": "subnet-06d75497a26c1e420",
+            "cidr": "10.10.1.0/24",
+            "availabilityZone": "eu-west-2b",
+            "routeTableId": "rtb-009a4ba961b5b4b3c"
+          }
+        ]
+      },
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-02656223676525c3e",
+            "cidr": "10.10.2.0/24",
+            "availabilityZone": "eu-west-2a",
+            "routeTableId": "rtb-0f3ff7784923f8f73"
+          },
+          {
+            "subnetId": "subnet-08b9e35b689cd0275",
+            "cidr": "10.10.3.0/24",
+            "availabilityZone": "eu-west-2b",
+            "routeTableId": "rtb-0a01fa5385ded3d08"
+          }
+        ]
+      }
+    ]
   }
 }

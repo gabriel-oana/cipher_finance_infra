@@ -3,6 +3,7 @@ import aws_cdk as cdk
 from cdk_config.config import Config
 from cdk_stacks.s3.s3_stack import S3Stack
 from cdk_stacks.iam_role.stock_scraper_iam_stack import StockScraperIAMStack
+from cdk_stacks.lambdas.exchange_rates_lambda_stack import ExchangeRatesLambdaStack
 from cdk_stacks.lambdas.historic_stock_scraper_lambda_stack import HistoricStockScraperLambdaStack
 from cdk_stacks.lambdas.hourly_stock_scraper_lambda_stack import HourlyStockScraperLambdaStack
 from cdk_stacks.rds.rds_stack import RDSPostgresStack
@@ -53,7 +54,6 @@ sg = SecurityGroupStack(
     scope=cdk_app,
     id=config.sg.name,
     config=config,
-    vpc=vpc_stack,
     env=cdk.Environment(
         account=os.environ['CDK_DEFAULT_ACCOUNT'],
         region=os.environ['CDK_DEFAULT_REGION']
@@ -64,7 +64,6 @@ rds = RDSPostgresStack(
     cdk_app,
     f'{config.env}-cipher-rds',
     config=config,
-    vpc=vpc_stack.vpc,
     sg=sg.sg,
     env=cdk.Environment(
         account=os.environ['CDK_DEFAULT_ACCOUNT'],
@@ -84,6 +83,17 @@ Route53Stack(
 )
 
 # Lambda Functions
+ExchangeRatesLambdaStack(
+    scope=cdk_app,
+    id=config.lambda_exchange_rates.name,
+    config=config,
+    lambda_config=config.lambda_exchange_rates,
+    env=cdk.Environment(
+        account=os.environ['CDK_DEFAULT_ACCOUNT'],
+        region=os.environ['CDK_DEFAULT_REGION']
+    )
+)
+
 HistoricStockScraperLambdaStack(
     scope=cdk_app,
     id=config.lambda_historic_stock_scraper.name,

@@ -6,7 +6,7 @@ Base = declarative_base(metadata=MetaData(schema='finance'))
 
 
 class ORM(Base):
-    __tablename__ = 'stock_hourly_raw'
+    __tablename__ = 'stock_daily_raw'
 
     id = Column(String, primary_key=True)
     ticker = Column(String)
@@ -14,8 +14,10 @@ class ORM(Base):
     ts = Column(Float)
     dt = Column(Date)
     price = Column(Float)
-    change = Column(Float)
-    prc_change = Column(Float)
-    volume = Column(Integer)
-    low = Column(Float)
+    open = Column(Float)
     high = Column(Float)
+    low = Column(Float)
+    volume = Column(Integer)
+    change = Column(Float)
+
+

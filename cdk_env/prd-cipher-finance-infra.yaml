@@ -1,5 +1,5 @@
 ---
-env: &env dev
+env: &env prd
 base_stack_name: &base_stack_name cipher-finance
 
 
@@ -93,4 +93,4 @@ rds:
 route53:
   certificate_arn: arn:aws:acm:eu-west-2:416241265996:certificate/6eba07fd-3875-4d9c-9d35-632ef8e7f9f1
   root_domain: ciphercode.co.uk
-  db_record_name: !join [ *env, .db ]
+  db_record_name: db

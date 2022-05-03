@@ -1,6 +1,7 @@
 import os
 import time
 import traceback
+import uuid
 from datetime import datetime
 from dataclasses import dataclass
 
@@ -9,6 +10,7 @@ from dataclasses import dataclass
 class Model:
 
     ticker: str
+    id: str = str(uuid.uuid4())
     ts: int = round(time.time() * 1000)
     updated_at: str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     dt: str = datetime.now().strftime('%Y-%m-%d')

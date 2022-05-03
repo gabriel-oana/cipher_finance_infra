@@ -45,6 +45,10 @@ class Config:
         return IAMConfig(self.config['iam_role']['auction-processor'], env=self.env)
 
     @property
+    def lambda_exchange_rates(self) -> LambdaConfig:
+        return LambdaConfig(self.config['lambdas']['exchange-rates'], env=self.env)
+
+    @property
     def lambda_historic_stock_scraper(self) -> LambdaConfig:
         return LambdaConfig(self.config['lambdas']['historic-stock-scraper'], env=self.env)
 

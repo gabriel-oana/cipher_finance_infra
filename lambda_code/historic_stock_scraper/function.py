@@ -3,15 +3,20 @@ Scraper triggered by Cloudwatch Events.
 This function is optimised for speed not code quality.
 As result, everything is very straight forward with as little overhead as possible.
 """
-
-from datetime import date, timedelta, datetime
+import os
+import time
+import uuid
 import json
+import boto3
 import requests
 from bs4 import BeautifulSoup
-import boto3
+from datetime import date, timedelta, datetime
+
+from db.orm import ORM
+from db.postgres_factory import PostgresFactory
 
 
-S3_BUCKET = 'dev-cipher-finance-raw'
+S3_BUCKET = f'{os.getenv("env")}-cipher-finance-raw'
 
 
 class VUSA:
@@ -122,13 +127,21 @@ def parse(model, raw_data: list, start_date: datetime.date, end_date: datetime.d
     if model.parser == 'uk_investing':
 
         data = []
+        parsed_dates = []
         for item, val in enumerate(raw_data):
             date_value = convert_str_to_date(val[0])
 
             # Get only values between the two dates
-            if end_date >= date_value >= start_date:
+            # Do not parse the same date twice
+            # Website has a bug
+            if end_date >= date_value >= start_date and date_value not in parsed_dates:
+                print(date_value)
+
                 data.append({
+                    "id": str(uuid.uuid4()),
+                    "ticker": model.ticker,
                     "updated_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "ts": round(time.time() * 1000),
                     "dt": convert_date_to_str(date_value),
                     "price": float(val[1].replace('$', '').replace(',', '')),
                     "open": float(val[2].replace("$", '').replace(',', '')),
@@ -137,10 +150,12 @@ def parse(model, raw_data: list, start_date: datetime.date, end_date: datetime.d
                     "volume": clean_uk_investment_volume(val[5].replace(',', '.')),
                     "change": float((val[6].split('%'))[0].replace(',', ''))
                 })
+                parsed_dates.append(date_value)
+
         return data
 
 
-def save_data(data: list, model):
+def save_data_s3(data: list, model):
     client = boto3.client('s3')
 
     for item in data:
@@ -152,16 +167,27 @@ def save_data(data: list, model):
         client.put_object(Body=json.dumps(item), Bucket=S3_BUCKET, Key=key)
 
 
+def save_data_pg(data: list, start_date: datetime.date, end_date: datetime.date):
+    pg_factory = PostgresFactory()
+    pg_factory.load(data=data, model=ORM, rm_existing_data=True, start_date=start_date, end_date=end_date)
+
+
 def lambda_handler(event, context):
     marker = event['ticker']
+    print(f'Processing {marker}')
+
     start = date.today() - timedelta(days=5)
     end = date.today()
 
     model = get_model(marker)
     raw_data = requestor(model)
+    print(raw_data)
 
     clean_data = parse(model, start_date=start, end_date=end, raw_data=raw_data)
-    save_data(data=clean_data, model=model)
+    print(clean_data)
+
+    save_data_s3(data=clean_data, model=model)
+    save_data_pg(data=clean_data, start_date=start, end_date=end)
 
 
 if __name__ == '__main__':

@@ -19,7 +19,3 @@ env.var.prd
 ### Build files
 .build
 .build/*
-
-### Migrate files
-migrations/flyway.conf
-migrations/flyway_database.conf

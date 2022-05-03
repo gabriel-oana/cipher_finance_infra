@@ -14,7 +14,7 @@ from cdk_config.config import Config
 from cdk_config.config_lambda import LambdaConfig
 
 
-class HistoricStockScraperLambdaStack(cdk.Stack):
+class ExchangeRatesLambdaStack(cdk.Stack):
 
     def __init__(self, scope: Construct, id: str, lambda_config: LambdaConfig, config: Config, **kwargs):
         super().__init__(scope, id, **kwargs)
@@ -43,6 +43,7 @@ class HistoricStockScraperLambdaStack(cdk.Stack):
             timeout=cdk.Duration.seconds(lambda_config.timeout_seconds),
             environment={
                 "env": config.env,
+                "EXCHANGE_RATES_API": os.getenv('EXCHANGE_RATES_API'),
                 "RDS_HOST": os.getenv('RDS_HOST'),
                 "RDS_PORT": os.getenv('RDS_PORT'),
                 "RDS_DATABASE": os.getenv('RDS_DATABASE'),
@@ -62,25 +63,23 @@ class HistoricStockScraperLambdaStack(cdk.Stack):
         # Cloudwatch events triggers the lambda function at specific time with each event.
         lambda_schedule = aws_events.Schedule.cron(
                 minute='0',
-                hour='*/6',
+                hour='5',
                 month='*',
                 week_day='*',
                 year='*')
 
-        for ticker in config.lambda_historic_stock_scraper.cloudwatch_events:
-            event_lambda_target = aws_events_targets.LambdaFunction(handler=self.function,
-                                                                    event=aws_events.RuleTargetInput.from_object(ticker))
+        event_lambda_target = aws_events_targets.LambdaFunction(handler=self.function)
 
-            cw_rule = aws_events.Rule(
-                self,
-                id=f'{lambda_config.name}-{ticker["ticker"]}-cw-rule',
-                description="The once per hour CloudWatch event trigger for the Lambda",
-                enabled=True,
-                schedule=lambda_schedule,
-                rule_name=f'{lambda_config.name}-{ticker["ticker"]}',
-                targets=[event_lambda_target]
-            )
-            add_tags(cw_rule, tags=config.tags)
+        cw_rule = aws_events.Rule(
+            self,
+            id=f'{lambda_config.name}-cw-rule',
+            description="The once per hour CloudWatch event trigger for the Lambda",
+            enabled=True,
+            schedule=lambda_schedule,
+            rule_name=lambda_config.name,
+            targets=[event_lambda_target]
+        )
+        add_tags(cw_rule, tags=config.tags)
 
     def create_dependencies_layer(self, config: Config, base_path: str, lambda_config: LambdaConfig) -> LayerVersion:
         """
